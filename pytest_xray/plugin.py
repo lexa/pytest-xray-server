@@ -2,7 +2,7 @@ from os import environ
 
 import pytest
 
-from .constants import XRAY_API_BASE_URL, XRAY_PLUGIN
+from .constants import XRAY_API_BASE_URL, XRAY_PLUGIN, XRAY_MARKER_NAME
 from .models import XrayTestReport
 from .utils import PublishXrayResults, associate_marker_metadata_for, get_test_key_for
 
@@ -12,6 +12,9 @@ JIRA_XRAY_FLAG = "--jira-xray"
 def pytest_configure(config):
     if not config.getoption(JIRA_XRAY_FLAG):
         return
+
+    config.addinivalue_line("markers",
+                            f"{XRAY_MARKER_NAME}(test_key, test_exec_key): report test results to Jira/Xray")
 
     plugin = PublishXrayResults(
         XRAY_API_BASE_URL,
