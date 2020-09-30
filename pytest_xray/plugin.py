@@ -2,7 +2,7 @@ from os import environ
 
 import pytest
 
-from .constants import XRAY_API_BASE_URL, XRAY_PLUGIN, XRAY_MARKER_NAME
+from .constants import XRAY_API_BASE_URL_DEFAULT, XRAY_PLUGIN, XRAY_MARKER_NAME
 from .models import XrayTestReport
 from .utils import PublishXrayResults, associate_marker_metadata_for, get_test_key_for
 
@@ -17,7 +17,7 @@ def pytest_configure(config):
                             f"{XRAY_MARKER_NAME}(test_key, test_exec_key): report test results to Jira/Xray")
 
     plugin = PublishXrayResults(
-        XRAY_API_BASE_URL,
+        config.getini('xray_base_url'),
         client_id=environ["XRAY_API_CLIENT_ID"],
         client_secret=environ["XRAY_API_CLIENT_SECRET"],
     )
@@ -31,6 +31,7 @@ def pytest_addoption(parser):
         JIRA_XRAY_FLAG, action="store_true", help="jira_xray: Publish test results to Xray API"
     )
 
+    parser.addini('xray_base_url', help="URL of Jira/XRAY API entry point ", default=XRAY_API_BASE_URL_DEFAULT)
 
 def pytest_collection_modifyitems(config, items):
     if not config.getoption(JIRA_XRAY_FLAG):
