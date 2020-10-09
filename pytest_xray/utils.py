@@ -59,7 +59,7 @@ class PublishXrayResults:
             logger.info("Post test execution success!")
 
     def results_url(self):
-        return f"{self.base_url}/api/v1/import/execution"
+        return f"{self.base_url}/raven/1.0/import/execution"
 
     def _test_execution_summaries(self, *report_objs):
         summaries = {}
