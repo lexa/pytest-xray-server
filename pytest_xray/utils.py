@@ -11,30 +11,6 @@ from .constants import XRAY_MARKER_NAME
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-_test_keys = {}
-
-
-def _get_xray_marker(item):
-    return item.get_closest_marker(XRAY_MARKER_NAME)
-
-
-def associate_marker_metadata_for(item):
-    marker = _get_xray_marker(item)
-    if not marker:
-        return
-
-    test_key = marker.kwargs["test_key"]
-    test_exec_key = marker.kwargs["test_exec_key"]
-    _test_keys[item.nodeid] = test_key, test_exec_key
-
-
-def get_test_key_for(item):
-    results = _test_keys.get(item.nodeid)
-    if results:
-        return results
-    return None, None
-
-
 class PublishXrayResults:
     def __init__(self, base_url, client_id, client_secret):
         self.base_url = base_url
@@ -61,7 +37,7 @@ class PublishXrayResults:
     def results_url(self):
         return f"{self.base_url}/raven/1.0/import/execution"
 
-    def _test_execution_summaries(self, *report_objs):
+    def _test_execution_summaries(self, report_objs):
         summaries = {}
 
         for each in report_objs:

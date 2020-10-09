@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from typing_extensions import Literal
 
 class XrayTestReport:
-    def __init__(self, outcome: Literal['passed', 'failed', 'skipped'], test_key, test_exec_key, duration, exception_log=None):
+    def __init__(self, test_key, test_exec_key, outcome: Literal['passed', 'failed', 'skipped'], duration, exception_log=None):
         self.test_key = test_key
         self.test_exec_key = test_exec_key
         self._set_execution_range(duration)

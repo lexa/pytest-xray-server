@@ -4,7 +4,7 @@ import pytest
 
 from .constants import XRAY_API_BASE_URL_DEFAULT, XRAY_PLUGIN, XRAY_MARKER_NAME
 from .models import XrayTestReport
-from .utils import PublishXrayResults, associate_marker_metadata_for, get_test_key_for
+from .utils import PublishXrayResults
 
 JIRA_XRAY_FLAG = "--jira-xray"
 
@@ -16,11 +16,7 @@ def pytest_configure(config):
     config.addinivalue_line("markers",
                             f"{XRAY_MARKER_NAME}(test_key, test_exec_key): report test results to Jira/Xray")
 
-    plugin = PublishXrayResults(
-        config.getini('xray_base_url'),
-        client_id=environ["XRAY_API_CLIENT_ID"],
-        client_secret=environ["XRAY_API_CLIENT_SECRET"],
-    )
+    plugin = XRayReporter()
     config.pluginmanager.register(plugin, XRAY_PLUGIN)
 
 
@@ -33,28 +29,51 @@ def pytest_addoption(parser):
 
     parser.addini('xray_base_url', help="URL of Jira/XRAY API entry point ", default=XRAY_API_BASE_URL_DEFAULT)
 
-def pytest_collection_modifyitems(config, items):
-    if not config.getoption(JIRA_XRAY_FLAG):
-        return
+# Test is considered PASSED iff 'setup', 'call' and 'teardown' phases are successful
+# If any of phases fail, the test reported as 'failed'
+# If any of pases are skipped, the test is reported as 'TODO'
+class XRayReporter:
 
-    for item in items:
-        associate_marker_metadata_for(item)
+    def __init__(self):
+        self._results = []#type: List[XrayTestReport]
+        self._outcomes = dict()# type: Dict[str, Literal['failed', 'skipped', 'passed']]
 
+    def _update_outcome(self, nodeid: str, outcome: Literal['failed', 'skipped', 'passed']):
+        prev_outcome = self._outcomes.get(nodeid, outcome)
 
-def pytest_terminal_summary(terminalreporter):
-    if not terminalreporter.config.getoption(JIRA_XRAY_FLAG):
-        return
+        if "failed" in [prev_outcome, outcome]:
+             self._outcomes[nodeid] = 'failed'
+        elif "skipped" in [prev_outcome, outcome]:
+             self._outcomes[nodeid] = 'skipped'
+        elif prev_outcome == 'passed' and outcome == 'passed':
+             self._outcomes[nodeid] = 'passed'
+        else:
+             raise Exception(f"{nodeid} : Can't handle outcome {outcome} and previous outcome {prev_outcome}")
 
-    test_reports = []
-    for each in terminalreporter.stats:
-        test_key, test_exec_key = get_test_key_for(each)
-        if test_key:
-            report = XrayTestReport(status, test_key, test_exec_key, each.duration)
-            test_reports.append(report)
+        return self._outcomes[nodeid]
 
-    publish_results = terminalreporter.config.pluginmanager.get_plugin(XRAY_PLUGIN)
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_runtest_makereport(self, item: "pytest.Item", call: "_pytest.runner.CallInfo[None]") -> Generator:
+        marker = item.get_closest_marker(XRAY_MARKER_NAME)
+        if not marker:
+            return
 
-    if not callable(publish_results):
-        raise TypeError("Xray plugin is not a callable. Please review 'pytest_configure' hook!")
+        outcome = yield
+        rep = outcome.get_result()
 
-    publish_results(*test_reports)
+        outcome = self._update_outcome(item.nodeid, rep.outcome)
+
+        if rep.when == 'teardown':
+            self._results.append(XrayTestReport(marker.kwargs["test_key"],
+                                                marker.kwargs["test_exec_key"],
+                                                outcome,
+                                                call.stop - call.start
+            ))
+
+    def pytest_sessionfinish(self, session: pytest.Session) -> None:
+        reporter = PublishXrayResults(
+            session.config.getini('xray_base_url'),
+            client_id=environ["XRAY_API_CLIENT_ID"],
+            client_secret=environ["XRAY_API_CLIENT_SECRET"],
+        )
+        reporter(self._results)
