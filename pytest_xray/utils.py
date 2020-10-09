@@ -6,7 +6,8 @@ import requests
 
 from requests.auth import HTTPBasicAuth
 
-from .constants import XRAY_MARKER_NAME
+from .constants import XRAY_MARKER_NAME, XRAY_EVIDENCE, XRAY_RESULT
+from .models import XrayEvidence, XrayResult
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -58,3 +59,17 @@ class PublishXrayResults:
             },
             "tests": [],
         }
+
+@pytest.fixture()
+def xray_evidence(request):
+    def _xray_evidence(**kwargs):
+        request.node.user_properties.append((XRAY_EVIDENCE, XrayEvidence(**kwargs)))
+
+    return _xray_evidence
+
+@pytest.fixture()
+def xray_result(request):
+    def _xray_result(**kwargs):
+        request.node.user_properties.append((XRAY_RESULT, XrayResult(**kwargs)))
+
+    return _xray_result

@@ -2,11 +2,12 @@ from os import environ
 
 import pytest
 
-from .constants import XRAY_API_BASE_URL_DEFAULT, XRAY_PLUGIN, XRAY_MARKER_NAME
-from .models import XrayTestReport
-from .utils import PublishXrayResults
+from .constants import XRAY_API_BASE_URL_DEFAULT, XRAY_PLUGIN, XRAY_MARKER_NAME, XRAY_EVIDENCE, XRAY_RESULT
+from .models import XrayTestReport, XrayEvidence, XrayResult
+from .utils import PublishXrayResults, xray_evidence, xray_result
 
 JIRA_XRAY_FLAG = "--jira-xray"
+
 
 
 def pytest_configure(config):
@@ -63,12 +64,17 @@ class XRayReporter:
 
         outcome = self._update_outcome(item.nodeid, rep.outcome)
 
+        evidences = [e for n, e in rep.user_properties if n == XRAY_EVIDENCE]
+        results = [r for n, r in rep.user_properties if n == XRAY_RESULT]
+
         if rep.when == 'teardown':
             self._results.append(XrayTestReport(marker.kwargs["test_key"],
                                                 marker.kwargs["test_exec_key"],
                                                 outcome,
                                                 call.start,
-                                                call.stop
+                                                call.stop,
+                                                evidences,
+                                                results
             ))
 
     def pytest_sessionfinish(self, session: pytest.Session) -> None:
