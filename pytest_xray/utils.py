@@ -4,6 +4,8 @@ import logging
 import pytest
 import requests
 
+from requests.auth import HTTPBasicAuth
+
 from .constants import XRAY_MARKER_NAME
 
 logger = logging.getLogger(__name__)
@@ -40,36 +42,24 @@ class PublishXrayResults:
         self.client_secret = client_secret
 
     def __call__(self, *report_objs):
-        bearer_token = self.authenticate()
         for a_dict in self._test_execution_summaries(*report_objs):
-            self._post(a_dict, bearer_token)
+            self._post(a_dict)
 
         logger.info("Successfully posted all test execution results to Xray!")
 
-    def _post(self, a_dict, bearer_token):
-        payload = json.dumps(a_dict)
-        logger.debug(f"Payload => {payload}")
+    def _post(self, a_dict):
+        logger.debug(f"Payload => {a_dict}")
         url = self.results_url()
-        headers = {"Content-Type": "application/json", "Authorization": f"Bearer {bearer_token}"}
-        resp = requests.post(self.results_url(), data=payload, headers=headers)
-
+        resp = requests.post(self.results_url(), json=a_dict, auth=HTTPBasicAuth(self.client_id, self.client_secret))
         if not resp.ok:
             logger.error("There was an error from Xray API!")
             logger.error(resp.text)
-            logger.info(f"Payload => {payload}")
+            logger.info(f"Payload => {a_dict}")
         else:
             logger.info("Post test execution success!")
 
     def results_url(self):
         return f"{self.base_url}/api/v1/import/execution"
-
-    def authenticate(self):
-        url = f"{self.base_url}/api/v1/authenticate"
-        payload = {"client_id": self.client_id, "client_secret": self.client_secret}
-        headers = {"Content-Type": "application/json"}
-        resp = requests.post(url, payload, headers)
-        token = resp.json()
-        return token
 
     def _test_execution_summaries(self, *report_objs):
         summaries = {}
