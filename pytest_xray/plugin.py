@@ -67,7 +67,8 @@ class XRayReporter:
             self._results.append(XrayTestReport(marker.kwargs["test_key"],
                                                 marker.kwargs["test_exec_key"],
                                                 outcome,
-                                                call.stop - call.start
+                                                call.start,
+                                                call.stop
             ))
 
     def pytest_sessionfinish(self, session: pytest.Session) -> None:
