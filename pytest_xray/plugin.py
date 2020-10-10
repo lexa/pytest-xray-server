@@ -8,6 +8,11 @@ from .utils import PublishXrayResults, xray_evidence, xray_result
 
 JIRA_XRAY_FLAG = "--jira-xray"
 
+from typing import List, Dict, Generator
+from _pytest.compat import TYPE_CHECKING
+from _pytest.runner import CallInfo
+if TYPE_CHECKING:
+    from typing_extensions import Literal
 
 
 def pytest_configure(config):
@@ -54,7 +59,7 @@ class XRayReporter:
         return self._outcomes[nodeid]
 
     @pytest.hookimpl(hookwrapper=True)
-    def pytest_runtest_makereport(self, item: "pytest.Item", call: "_pytest.runner.CallInfo[None]") -> Generator:
+    def pytest_runtest_makereport(self, item: pytest.Item, call: CallInfo[None]) -> Generator:
         marker = item.get_closest_marker(XRAY_MARKER_NAME)
         if not marker:
             return
