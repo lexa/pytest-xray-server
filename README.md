@@ -1,14 +1,32 @@
+What is that?
+======================
+
+This is a pytest plugin for reporting tests results to Xray *Server* . Xray
+comes in two flavours [Xray Server and Xray Cloud](https://docs.getxray.app/display/XRAYCLOUD/Xray+Server+and+Xray+Cloud)
+which are significantly different. They have incompatible APIs.
+
+This plugin works with Xray *Server*. If you want to work with [Xray Cloud](https://xray.cloud.xpand-it.com), use [pytest-typhoon-xray](https://github.com/typhoon-hil/pytest-typhoon-xray)
+
 Plugin installation
 ======================
 
 To install this library for use please enter the following command:
 
-    $ pip install pytest_xray
+    $ pip install pytest_xray_server
 
 To use this plugin
 ======================
 
-To take advantage of the pytest xray plugin, use markers from pytest to associate a test function with a test key and test execution id:
+To start using the plugin, add it to the list [pytest_plugins in conftest.py](https://docs.pytest.org/en/stable/plugins.html).
+
+    pytest_plugins = ["pytest_xray_server"]
+
+And configure URL to your xray instance in pytest.ini:
+
+    [pytest]
+    xray_base_url = https://xray.example.com/rest/
+
+In test cases use markers to associate a test function with a test key and test execution id:
 
     import pytest
 
@@ -20,7 +38,7 @@ Enable the plugin by passing the extra options to the command line when invoking
 
     $ pytest . --jira-xray
 
-It is important that the environment variables **XRAY_API_CLIENT_ID** and **XRAY_API_CLIENT_SECRET** are set for pytest_xray to sucessfully post results to the Xray API.
+It is important that the environment variables **XRAY_API_CLIENT_ID** and **XRAY_API_CLIENT_SECRET** are set for pytest_xray_server to successfully post results to the Xray API.
 
 Maintenance notes
 ======================

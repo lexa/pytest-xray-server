@@ -1,5 +1,5 @@
 XRAY_PLUGIN = "JIRA_XRAY"
 XRAY_MARKER_NAME = "xray"
-XRAY_API_BASE_URL_DEFAULT = "https://xray.cloud.xpand-it.com"
+XRAY_API_BASE_URL_DEFAULT = "https://xray.example.com/rest/"
 XRAY_EVIDENCE = "xray_evidence"
 XRAY_RESULT = "xray_result"
