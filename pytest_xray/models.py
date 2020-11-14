@@ -36,7 +36,7 @@ class XrayResult:
                 'status' : self.status}
 
 class XrayTestReport:
-    def __init__(self, test_key, test_exec_key, outcome: Literal['passed', 'failed', 'skipped'], start, stop, evidences, results):
+    def __init__(self, test_key, test_exec_key, outcome: "Literal['passed', 'failed', 'skipped']", start, stop, evidences, results):
         self.test_key = test_key
         self.test_exec_key = test_exec_key
         self.start = datetime.fromtimestamp(start, tz=LOCAL_TIMEZONE)

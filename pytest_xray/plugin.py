@@ -44,7 +44,7 @@ class XRayReporter:
         self._results = []#type: List[XrayTestReport]
         self._outcomes = dict()# type: Dict[str, Literal['failed', 'skipped', 'passed']]
 
-    def _update_outcome(self, nodeid: str, outcome: Literal['failed', 'skipped', 'passed']):
+    def _update_outcome(self, nodeid: str, outcome: "Literal['failed', 'skipped', 'passed']"):
         prev_outcome = self._outcomes.get(nodeid, outcome)
 
         if "failed" in [prev_outcome, outcome]:
