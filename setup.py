@@ -14,7 +14,7 @@ PKG_INSTALL_REQS = ["pytest >= 5.3.1", "requests >= 2.21.0"]
 
 
 setup(
-    name="pytest_xray",
+    name="pytest_xray_server",
     author="Neville Tummon",
     author_email="nt.devs@gmail.com",
     version="0.2.1",
@@ -25,7 +25,7 @@ setup(
     download_url="https://github.com/Isentia/pytest_xray/archive/v0.2.1.tar.gz",
     install_requires=PKG_INSTALL_REQS,
     summary="py.test Xray integration plugin, using markers",
-    entry_points={"pytest11": ["pytest_xray = pytest_xray.plugin"]},
+    entry_points={"pytest11": ["pytest_xray_server = pytest_xray_server.plugin"]},
     classifiers=[
         # How mature is this project? Common values are
         #   3 - Alpha

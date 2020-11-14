@@ -40,7 +40,7 @@ Enable the plugin by passing the extra options to the command line when invoking
 
 It is important that the environment variables **XRAY_API_CLIENT_ID** and **XRAY_API_CLIENT_SECRET** are set for pytest_xray_server to successfully post results to the Xray API.
 
-    export XRAY_API_CLIENT_ID=user.name@example.com
+    export XRAY_API_CLIENT_ID=user.name
     export XRAY_API_CLIENT_SECRET=password
 
 
