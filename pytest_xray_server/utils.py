@@ -28,12 +28,7 @@ class PublishXrayResults:
         logger.debug(f"Payload => {a_dict}")
         url = self.results_url()
         resp = requests.post(self.results_url(), json=a_dict, auth=HTTPBasicAuth(self.client_id, self.client_secret))
-        if not resp.ok:
-            logger.error("There was an error from Xray API!")
-            logger.error(resp.text)
-            logger.info(f"Payload => {a_dict}")
-        else:
-            logger.info("Post test execution success!")
+        resp.raise_for_status()
 
     def results_url(self):
         return f"{self.base_url}/raven/1.0/import/execution"
