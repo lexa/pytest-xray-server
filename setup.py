@@ -17,6 +17,8 @@ setup(
     name="pytest_xray_server",
     author="Neville Tummon",
     author_email="nt.devs@gmail.com",
+    maintainer='Aleksei Fedotov',
+    maintainer_email='aleksei@fedotov.email',
     version="0.2.1",
     python_requires=">=3.6.6",
     long_description=long_description(),
