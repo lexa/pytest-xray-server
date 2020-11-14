@@ -7,6 +7,8 @@ which are significantly different. They have incompatible APIs.
 
 This plugin works with Xray *Server*. If you want to work with [Xray Cloud](https://xray.cloud.xpand-it.com), use [pytest-typhoon-xray](https://github.com/typhoon-hil/pytest-typhoon-xray)
 
+If you are interested in improving the plugin, read [API documentation for Xray Server] (https://docs.getxray.app/display/XRAY/REST+API)
+
 Plugin installation
 ======================
 
