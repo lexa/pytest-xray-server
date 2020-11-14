@@ -58,8 +58,8 @@ class XrayTestReport:
     def as_dict(self):
         entry = {"testKey": self.test_key,
                  "status": self.status,
-                 "start" : self.start.isoformat(),
-                 "finish" : self.stop.isoformat(),
+                 "start" : self.start.isoformat(timespec='seconds'),
+                 "finish" : self.stop.isoformat(timespec='seconds'),
                  "evidences" : self.evidences,
                  "results" : self.results,
         }
