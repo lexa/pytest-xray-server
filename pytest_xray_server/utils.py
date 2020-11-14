@@ -49,7 +49,6 @@ class PublishXrayResults:
             "info": {
                 "summary": "Execution of automated tests",
                 "description": "",
-                "version": "",
                 "testEnvironments": [],
             },
             "tests": [],
