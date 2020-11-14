@@ -62,6 +62,7 @@ class PublishXrayResults:
 
 @pytest.fixture()
 def xray_evidence(request):
+    """Capture a binary file to attach to Xray execution ticket"""
     def _xray_evidence(**kwargs):
         request.node.user_properties.append((XRAY_EVIDENCE, XrayEvidence(**kwargs)))
 
@@ -69,6 +70,7 @@ def xray_evidence(request):
 
 @pytest.fixture()
 def xray_result(request):
+    """Capture a chunk of text to attach to Xray execution ticket"""
     def _xray_result(**kwargs):
         request.node.user_properties.append((XRAY_RESULT, XrayResult(**kwargs)))
 
