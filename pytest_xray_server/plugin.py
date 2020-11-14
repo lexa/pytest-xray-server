@@ -16,11 +16,11 @@ if TYPE_CHECKING:
 
 
 def pytest_configure(config):
-    if not config.getoption(JIRA_XRAY_FLAG):
-        return
-
     config.addinivalue_line("markers",
                             f"{XRAY_MARKER_NAME}(test_key, test_exec_key): report test results to Jira/Xray")
+
+    if not config.getoption(JIRA_XRAY_FLAG):
+        return
 
     plugin = XRayReporter()
     config.pluginmanager.register(plugin, XRAY_PLUGIN)
