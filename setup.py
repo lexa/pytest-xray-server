@@ -24,7 +24,7 @@ setup(
     long_description=long_description(),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=("tests",)),
-    download_url="https://github.com/lexa/pytest_xray_server/archive/v1.0.tar.gz",
+    download_url="https://github.com/lexa/pytest-xray-server/archive/v1.0.tar.gz",
     install_requires=PKG_INSTALL_REQS,
     summary="py.test Xray integration plugin, using markers",
     entry_points={"pytest11": ["pytest_xray_server = pytest_xray_server.plugin"]},
