@@ -1,5 +1,6 @@
 from os import environ
 
+import time
 import pytest
 
 from .constants import XRAY_API_BASE_URL_DEFAULT, XRAY_PLUGIN, XRAY_MARKER_NAME, XRAY_EVIDENCE, XRAY_RESULT
@@ -10,7 +11,7 @@ JIRA_XRAY_FLAG = "--jira-xray"
 
 from typing import List, Dict, Generator
 from _pytest.compat import TYPE_CHECKING
-from _pytest.runner import CallInfo
+from _pytest.runner import Item, TestReport
 if TYPE_CHECKING:
     from typing_extensions import Literal
 
@@ -43,6 +44,7 @@ class XRayReporter:
     def __init__(self):
         self._results = []#type: List[XrayTestReport]
         self._outcomes = dict()# type: Dict[str, Literal['failed', 'skipped', 'passed']]
+        self._ticket_id = dict()# type: Dict[str, Tiple[str, str]]
         self.reporter = PublishXrayResults(
             session.config.getini('xray_base_url'),
             client_id=environ["XRAY_API_CLIENT_ID"],
@@ -63,29 +65,36 @@ class XRayReporter:
 
         return self._outcomes[nodeid]
 
-    @pytest.hookimpl(hookwrapper=True)
-    def pytest_runtest_makereport(self, item: pytest.Item, call: CallInfo[None]) -> Generator:
+
+    def pytest_runtest_setup(self, item: "Item") -> None:
         marker = item.get_closest_marker(XRAY_MARKER_NAME)
         if not marker:
             return
 
-        outcome = yield
-        rep = outcome.get_result()
+        self._ticket_id[item.nodeid] = marker.kwargs["test_exec_key"], marker.kwargs["test_key"],
 
-        outcome = self._update_outcome(item.nodeid, rep.outcome)
 
-        evidences = [e for n, e in rep.user_properties if n == XRAY_EVIDENCE]
-        results = [r for n, r in rep.user_properties if n == XRAY_RESULT]
+    def pytest_runtest_logreport(self, report: "TestReport"):
+        test_exec_key, test_key = self._ticket_id.get(report.nodeid, (None, None))
+        if not (test_exec_key and test_key):
+            return
 
-        if rep.when == 'teardown':
-            self._results.append(XrayTestReport(marker.kwargs["test_key"],
-                                                marker.kwargs["test_exec_key"],
-                                                outcome,
-                                                call.start,
-                                                call.stop,
-                                                evidences,
-                                                results
-            ))
+        outcome = self._update_outcome(report.nodeid, report.outcome)
+
+        if report.when != 'teardown':
+            return
+
+        evidences = [e for n, e in report.user_properties if n == XRAY_EVIDENCE]
+        results = [r for n, r in report.user_properties if n == XRAY_RESULT]
+
+        self._results.append(XrayTestReport(test_key,
+                                            test_exec_key,
+                                            outcome,
+                                            time.time() - report.duration,
+                                            time.time(),
+                                            evidences,
+                                            results
+                                            ))
 
     def pytest_sessionfinish(self, session: pytest.Session) -> None:
 
