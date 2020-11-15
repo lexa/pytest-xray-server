@@ -43,6 +43,11 @@ class XRayReporter:
     def __init__(self):
         self._results = []#type: List[XrayTestReport]
         self._outcomes = dict()# type: Dict[str, Literal['failed', 'skipped', 'passed']]
+        self.reporter = PublishXrayResults(
+            session.config.getini('xray_base_url'),
+            client_id=environ["XRAY_API_CLIENT_ID"],
+            client_secret=environ["XRAY_API_CLIENT_SECRET"],
+        )
 
     def _update_outcome(self, nodeid: str, outcome: "Literal['failed', 'skipped', 'passed']"):
         prev_outcome = self._outcomes.get(nodeid, outcome)
@@ -83,9 +88,5 @@ class XRayReporter:
             ))
 
     def pytest_sessionfinish(self, session: pytest.Session) -> None:
-        reporter = PublishXrayResults(
-            session.config.getini('xray_base_url'),
-            client_id=environ["XRAY_API_CLIENT_ID"],
-            client_secret=environ["XRAY_API_CLIENT_SECRET"],
-        )
-        reporter(self._results)
+
+        self.reporter(self._results)
