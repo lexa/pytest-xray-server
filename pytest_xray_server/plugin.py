@@ -3,11 +3,9 @@ from os import environ
 import time
 import pytest
 
-from .constants import XRAY_API_BASE_URL_DEFAULT, XRAY_PLUGIN, XRAY_MARKER_NAME, XRAY_EVIDENCE, XRAY_RESULT
+from .constants import XRAY_API_BASE_URL_DEFAULT, XRAY_PLUGIN, XRAY_MARKER_NAME, XRAY_EVIDENCE, XRAY_RESULT, JIRA_XRAY_FLAG
 from .models import XrayTestReport, XrayEvidence, XrayResult
 from .utils import PublishXrayResults, xray_evidence, xray_result
-
-JIRA_XRAY_FLAG = "--jira-xray"
 
 from typing import List, Dict, Generator
 from _pytest.compat import TYPE_CHECKING
