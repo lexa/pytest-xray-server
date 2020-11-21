@@ -3,7 +3,7 @@ from os import environ
 import time
 import pytest
 
-from .constants import XRAY_API_BASE_URL_DEFAULT, XRAY_PLUGIN, XRAY_MARKER_NAME, XRAY_EVIDENCE, XRAY_RESULT, JIRA_XRAY_FLAG
+from .constants import XRAY_API_BASE_URL_DEFAULT, XRAY_PLUGIN, XRAY_MARKER_NAME, XRAY_EVIDENCE, XRAY_RESULT, JIRA_XRAY_FLAG, XRAY_TEST_EXEC_ARG
 from .models import XrayTestReport, XrayEvidence, XrayResult
 from .utils import PublishXrayResults, xray_evidence, xray_result
 
@@ -32,6 +32,10 @@ def pytest_addoption(parser):
         JIRA_XRAY_FLAG, action="store_true", help="jira_xray: Publish test results to Xray API"
     )
 
+    group.addoption(
+        XRAY_TEST_EXEC_ARG, action="store", help="jira_xray: Test execution Ticket ID"
+    )
+
     parser.addini('xray_base_url', help="URL of Jira/XRAY API entry point ", default=XRAY_API_BASE_URL_DEFAULT)
 
 # Test is considered PASSED iff 'setup', 'call' and 'teardown' phases are successful
@@ -40,6 +44,7 @@ def pytest_addoption(parser):
 class XRayReporter:
 
     def __init__(self):
+        self._default_test_exec_key = config.getoption(XRAY_TEST_EXEC_ARG)
         self._results = []#type: List[XrayTestReport]
         self._outcomes = dict()# type: Dict[str, Literal['failed', 'skipped', 'passed']]
         self._ticket_id = dict()# type: Dict[str, Tiple[str, str]]
@@ -69,7 +74,10 @@ class XRayReporter:
         if not marker:
             return
 
-        self._ticket_id[item.nodeid] = marker.kwargs["test_exec_key"], marker.kwargs["test_key"],
+        test_exec_key = marker.kwargs["test_exec_key"] or self._default_test_exec_key
+        if not test_exec_key:
+            raise pytest.UsageError("test {} does not have test_exec_key configured and no command line option {} specified".format(item.nodeid, XRAY_TEST_EXEC_ARG))
+        self._ticket_id[item.nodeid] = (test_exec_key , marker.kwargs["test_key"])
 
 
     def pytest_runtest_logreport(self, report: "TestReport"):

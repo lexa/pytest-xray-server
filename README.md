@@ -16,7 +16,7 @@ To install this library for use please enter the following command:
 
     $ pip install pytest_xray_server
 
-To use this plugin
+How to use this plugin
 ======================
 
 To start using the plugin, add it to the list [pytest_plugins in conftest.py](https://docs.pytest.org/en/stable/plugins.html).
@@ -32,18 +32,21 @@ In test cases use markers to associate a test function with a test key and test 
 
     import pytest
 
-    @pytest.mark.xray(test_key="PRDS-12345", test_exec_key="PRDS-12121")
+    @pytest.mark.xray(test_key="PRDS-12345")
     def test_my_function():
         assert True == True
 
 Enable the plugin by passing the extra options to the command line when invoking the pytest runner:
 
-    $ pytest . --jira-xray
+    $ pytest . --jira-xray --jira-xray-test-exec-key=PRDS-12121
+
+where PRDS-12121 is Jira ticket ID of Test Execution ticket.
 
 It is important that the environment variables **XRAY_API_CLIENT_ID** and **XRAY_API_CLIENT_SECRET** are set for pytest_xray_server to successfully post results to the Xray API.
 
     export XRAY_API_CLIENT_ID=user.name
     export XRAY_API_CLIENT_SECRET=password
+
 
 
 Maintenance notes
