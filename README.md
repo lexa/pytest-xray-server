@@ -47,6 +47,24 @@ It is important that the environment variables **XRAY_API_CLIENT_ID** and **XRAY
     export XRAY_API_CLIENT_ID=user.name
     export XRAY_API_CLIENT_SECRET=password
 
+Adding execution evidence.
+======================
+
+Xray allows attachiching execution evidence in form of text (Results) and binary
+blobs (evidence). This plug-in lets you create both of the from tests using xray_result and xray_evidence fixtures
+
+    def test_my_function(xray_evidence, xray_result):
+        xray_evidence(filename="screenshot.png", data=open('screenshot.png').read())
+        xray_result(name='text results', log='chunk of text', status='PASS')
+
+The fixtures work by appending evidence and resutls to node.user_properties, you
+could add evidence to it from pytest hooks. It is important to add a tuple of
+two elements with first element 'xray_result' or 'xray_evidence' and appropriate
+type of the second element.
+
+    from pytest_xray_server import models
+
+    item.user_properties.append(("xray_result", models.XrayResult(name='text results', log='chunk of text', status="PASS")))
 
 
 Maintenance notes
