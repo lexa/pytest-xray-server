@@ -21,7 +21,7 @@ def pytest_configure(config):
     if not config.getoption(JIRA_XRAY_FLAG):
         return
 
-    plugin = XRayReporter()
+    plugin = XRayReporter(config)
     config.pluginmanager.register(plugin, XRAY_PLUGIN)
 
 
@@ -43,13 +43,13 @@ def pytest_addoption(parser):
 # If any of pases are skipped, the test is reported as 'TODO'
 class XRayReporter:
 
-    def __init__(self):
+    def __init__(self, config):
         self._default_test_exec_key = config.getoption(XRAY_TEST_EXEC_ARG)
         self._results = []#type: List[XrayTestReport]
         self._outcomes = dict()# type: Dict[str, Literal['failed', 'skipped', 'passed']]
         self._ticket_id = dict()# type: Dict[str, Tiple[str, str]]
         self.reporter = PublishXrayResults(
-            session.config.getini('xray_base_url'),
+            config.getini('xray_base_url'),
             client_id=environ["XRAY_API_CLIENT_ID"],
             client_secret=environ["XRAY_API_CLIENT_SECRET"],
         )
