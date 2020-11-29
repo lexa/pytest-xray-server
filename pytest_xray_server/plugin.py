@@ -74,7 +74,7 @@ class XRayReporter:
         if not marker:
             return
 
-        test_exec_key = marker.kwargs["test_exec_key"] or self._default_test_exec_key
+        test_exec_key = marker.kwargs.get("test_exec_key", None) or self._default_test_exec_key
         if not test_exec_key:
             raise pytest.UsageError("test {} does not have test_exec_key configured and no command line option {} specified".format(item.nodeid, XRAY_TEST_EXEC_ARG))
         self._ticket_id[item.nodeid] = (test_exec_key , marker.kwargs["test_key"])
