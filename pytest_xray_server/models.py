@@ -12,6 +12,16 @@ if TYPE_CHECKING:
 
 LOCAL_TIMEZONE = datetime.now().astimezone().tzinfo
 
+def _convert_pytest_outcome_to_xray_status(outcome: "Literal['passed', 'failed', 'skipped']"):
+    if outcome == 'passed':
+        return 'PASS'
+    elif outcome == 'failed':
+        return 'FAIL'
+    elif outcome == 'skipped':
+        return 'TODO'
+    else:
+        raise Exception(f"Don't know how to convert status {status} to Xray status")
+
 class XrayEvidence:
     def __init__(self, *, filename: str, data: Union[str, bytes]):
         # data should be byte-like object to be encoded in Base64
@@ -25,10 +35,16 @@ class XrayEvidence:
                 'data' : b64encode(self.data).decode()}
 
 class XrayResult:
-    def __init__(self, *, name: str, log: str, status: str):
+    def __init__(self, *, name: str, log: str, outcome: "Literal['passed', 'failed', 'skipped']" = None, status: "Literal['PASS', 'FAIL', 'TODO']" = None):
         self.name = name
         self.log = log
-        self.status = status
+
+        assert outcome or status
+        # If XRAY status is specified, use it, otherwise convert pytest outcome to status
+        if status:
+            self.status = status
+        else:
+            self.status = _convert_pytest_outcome_to_xray_status(outcome)
 
     def as_dict(self) -> Dict[str, str]:
         return {'name': self.name,

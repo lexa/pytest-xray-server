@@ -64,7 +64,7 @@ type of the second element.
 
     from pytest_xray_server import models
 
-    item.user_properties.append(("xray_result", models.XrayResult(name='text results', log='chunk of text', status="PASS")))
+    item.user_properties.append(("xray_result", models.XrayResult(name='text results', log='chunk of text', outcome='passed')))
 
 
 Maintenance notes

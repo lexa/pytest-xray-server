@@ -65,7 +65,7 @@ def xray_evidence(request):
 @pytest.fixture()
 def xray_result(request):
     """Capture a chunk of text to attach to Xray execution ticket"""
-    def _xray_result(**kwargs):
-        request.node.user_properties.append((XRAY_RESULT, XrayResult(**kwargs)))
+    def _xray_result(name: str, log : str, outcome: "Literal['passed', 'failed', 'skipped']"):
+        request.node.user_properties.append((XRAY_RESULT, XrayResult(name, log, outcome)))
 
     return _xray_result
