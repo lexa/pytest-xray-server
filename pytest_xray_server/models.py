@@ -1,6 +1,7 @@
 from .constants import XRAY_EVIDENCE, XRAY_RESULT
 from datetime import datetime, timedelta
 from base64 import b64encode
+import urllib.parse
 
 from typing import Dict, Union
 from _pytest.compat import TYPE_CHECKING
@@ -28,7 +29,7 @@ class XrayEvidence:
         if isinstance(data, str):
             data = data.encode()
         self.data = data
-        self.filename = filename
+        self.filename = urllib.parse.quote(filename.replace('/', '_'))
 
     def as_dict(self) -> Dict[str, str]:
         return {'filename': self.filename,
