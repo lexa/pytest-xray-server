@@ -3,6 +3,7 @@ import logging
 
 import pytest
 import requests
+from typing import Union
 
 from requests.auth import HTTPBasicAuth
 
@@ -57,8 +58,8 @@ class PublishXrayResults:
 @pytest.fixture()
 def xray_evidence(request):
     """Capture a binary file to attach to Xray execution ticket"""
-    def _xray_evidence(**kwargs):
-        request.node.user_properties.append((XRAY_EVIDENCE, XrayEvidence(**kwargs)))
+    def _xray_evidence(filename: str, data: Union[str, bytes]):
+        request.node.user_properties.append((XRAY_EVIDENCE, XrayEvidence(filename=filename, data=data)))
 
     return _xray_evidence
 
