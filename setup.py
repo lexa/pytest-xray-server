@@ -10,7 +10,7 @@ def long_description():
         return f.read()
 
 
-PKG_INSTALL_REQS = ["pytest >= 5.3.1", "requests >= 2.21.3"]
+PKG_INSTALL_REQS = ["pytest >= 5.3.1", "requests >= 2.21.4"]
 
 
 setup(
@@ -19,12 +19,12 @@ setup(
     author_email="nt.devs@gmail.com",
     maintainer='Aleksei Fedotov',
     maintainer_email='aleksei@fedotov.email',
-    version="1.3",
+    version="1.4",
     python_requires=">=3.6.6",
     long_description=long_description(),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=("tests",)),
-    download_url="https://github.com/lexa/pytest-xray-server/archive/v1.3.tar.gz",
+    download_url="https://github.com/lexa/pytest-xray-server/archive/v1.4.tar.gz",
     install_requires=PKG_INSTALL_REQS,
     summary="py.test Xray integration plugin, using markers",
     entry_points={"pytest11": ["pytest_xray_server = pytest_xray_server.plugin"]},
