@@ -58,14 +58,7 @@ class XrayTestReport:
         self.test_exec_key = test_exec_key
         self.start = datetime.fromtimestamp(start, tz=LOCAL_TIMEZONE)
         self.stop = datetime.fromtimestamp(stop, tz=LOCAL_TIMEZONE)
-        if outcome == 'passed':
-            self.status = 'PASS'
-        elif outcome == 'failed':
-            self.status = 'FAIL'
-        elif outcome == 'skipped':
-            self.status = 'TODO'
-        else:
-            raise Exception("XRay plugin does not understart test outcome {outcome}")
+        self.status = _convert_pytest_outcome_to_xray_status(outcome)
         self.evidences = [e.as_dict() for e in evidences]
         self.results = [r.as_dict() for r in results]
 
