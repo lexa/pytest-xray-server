@@ -19,7 +19,7 @@ def _convert_pytest_outcome_to_xray_status(outcome: "Literal['passed', 'failed',
     elif outcome == 'failed':
         return 'FAIL'
     elif outcome == 'skipped':
-        return 'TODO'
+        return 'ABORTED'
     else:
         raise Exception(f"Don't know how to convert status {status} to Xray status")
 
