@@ -61,6 +61,8 @@ class XRayReporter:
              self._outcomes[nodeid] = 'failed'
         elif "skipped" in [prev_outcome, outcome]:
              self._outcomes[nodeid] = 'skipped'
+        elif "xfailed" in [prev_outcome, outcome]:
+             self._outcomes[nodeid] = 'xfailed'
         elif prev_outcome == 'passed' and outcome == 'passed':
              self._outcomes[nodeid] = 'passed'
         else:
@@ -79,7 +81,7 @@ class XRayReporter:
             raise pytest.UsageError("test {} does not have test_exec_key configured and no command line option {} specified".format(item.nodeid, XRAY_TEST_EXEC_ARG))
         self._ticket_id[item.nodeid] = (test_exec_key , marker.kwargs["test_key"])
 
-
+    
     def pytest_runtest_logreport(self, report: "TestReport"):
         test_exec_key, test_key = self._ticket_id.get(report.nodeid, (None, None))
         if not (test_exec_key and test_key):
