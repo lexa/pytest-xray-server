@@ -19,7 +19,7 @@ setup(
     author_email="nt.devs@gmail.com",
     maintainer='Yuliya Sharkadiy',
     maintainer_email='yuliya@sharky.email',
-    version="1.5",
+    version="1.6",
     python_requires=">=3.6.6",
     long_description=long_description(),
     long_description_content_type="text/markdown",
