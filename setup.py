@@ -21,7 +21,7 @@ setup(
     maintainer_email='aleksei@fedotov.email',
     maintainer='Yuliya Sharkadiy',
     maintainer_email='yuliya@sharky.email',
-    version="1.4",
+    version="1.5",
     python_requires=">=3.6.6",
     long_description=long_description(),
     long_description_content_type="text/markdown",
