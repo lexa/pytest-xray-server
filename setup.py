@@ -19,6 +19,8 @@ setup(
     author_email="nt.devs@gmail.com",
     maintainer='Aleksei Fedotov',
     maintainer_email='aleksei@fedotov.email',
+    maintainer='Yuliya Sharkadiy',
+    maintainer_email='yuliya@sharky.email',
     version="1.4",
     python_requires=">=3.6.6",
     long_description=long_description(),
