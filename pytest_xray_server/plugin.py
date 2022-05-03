@@ -70,7 +70,7 @@ class XRayReporter:
 
         return self._outcomes[nodeid]
 
-
+    @pytest.hookimpl(tryfirst=True)
     def pytest_runtest_setup(self, item: "Item") -> None:
         marker = item.get_closest_marker(XRAY_MARKER_NAME)
         if not marker:
@@ -87,6 +87,8 @@ class XRayReporter:
         if not (test_exec_key and test_key):
             return
 
+        if getattr(report, 'keywords', ()).get('xfail', 0): 
+            report.outcome = 'xfailed'
         outcome = self._update_outcome(report.nodeid, report.outcome)
 
         if report.when != 'teardown':
